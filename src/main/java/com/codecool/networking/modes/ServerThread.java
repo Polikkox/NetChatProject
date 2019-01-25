@@ -45,14 +45,14 @@ public class ServerThread extends Thread {
     }
 
     private void listenOnServer(BufferedReader incomeMessage, PrintWriter outcomeMessage) throws IOException {
-
         while (true) {
             String input = incomeMessage.readLine();
             if (input == null || input.isEmpty()) {
                 break;
             }
+            outcomeMessage.println(input +" by server");
             System.out.println(input);
-            outcomeMessage.println(input);
+
         }
     }
 
