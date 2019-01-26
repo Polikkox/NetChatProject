@@ -1,5 +1,7 @@
 package com.codecool.networking.modes;
 
+import com.codecool.networking.ScannerThread;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,8 +11,10 @@ import java.util.Scanner;
 
 public class Client {
     private Scanner scanner = new Scanner(System.in);
+    private ScannerThread scannerThread;
+    private boolean lock = true;
 
-    public void runClientSocket(String hostname, int portNumber){
+    public void runClientSocket(String hostname, int portNumber) throws IOException {
 
 
         String name = getName();
@@ -28,29 +32,26 @@ public class Client {
         sentNameOfClientToServer(outcomeMessage, name);
         displayIncomeMessage(incomeMessage);
 
-
         while (true) {
-
             String userInput = getUserInput();
-            if(checkIfUserWantToDisconnect(userInput)){
-                break;
+
+            if(userInput != null){
+                outcomeMessage.println(name + ": " + userInput);
+
             }
-
-
-            outcomeMessage.println(name + ": " + userInput);
-            displayIncomeMessage(incomeMessage);
+            if(incomeMessage.ready()){
+                System.out.println(incomeMessage.readLine());
+            }
         }
     }
+
     private void sentNameOfClientToServer(PrintWriter outcomeMessage, String name){
         outcomeMessage.println(name);
     }
-    private void displayIncomeMessage(BufferedReader incomeMessage){
-        try {
-            String inputMessage = incomeMessage.readLine();
-            System.out.println(inputMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    private void displayIncomeMessage(BufferedReader incomeMessage) throws IOException {
+        String inputMessage = incomeMessage.readLine();
+        System.out.println(inputMessage);
     }
 
     private boolean checkIfUserWantToDisconnect(String message) {
@@ -61,9 +62,23 @@ public class Client {
     }
 
     private String getUserInput() {
-        System.out.println("\nEnter a string to send to the server (empty to quit):");
-        return scanner.nextLine();
 
+        //Run only one thread waiting for user input
+        if(lock) {
+
+            scannerThread = new ScannerThread();
+            Thread thread = new Thread(scannerThread);
+            thread.start();
+            lock = false;
+        }
+        String input = scannerThread.getInput();
+
+        //Enable take another one input after got input
+        if(input != null){
+            scannerThread.setInput(null);
+            lock = true;
+        }
+        return input;
     }
 
     private String getName() {
