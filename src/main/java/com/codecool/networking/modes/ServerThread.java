@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ServerThread extends Thread {
     private Socket socket;
     private int clientNumber;
+    private Scanner scanner = new Scanner(System.in);
+
 
     public ServerThread(Socket socket, int clientNumber) {
         this.socket = socket;
@@ -46,13 +49,16 @@ public class ServerThread extends Thread {
 
     private void listenOnServer(BufferedReader incomeMessage, PrintWriter outcomeMessage) throws IOException {
         while (true) {
-            String input = incomeMessage.readLine();
-            if (input == null || input.isEmpty()) {
-                break;
-            }
-            outcomeMessage.println(input +" by server");
-            System.out.println(input);
+            String input = null;
+            if(incomeMessage.ready()){
+                input = incomeMessage.readLine();
 
+            }
+//            outcomeMessage.println(getUserInput() +" by server");
+            if(input != null){
+                outcomeMessage.println(input +" by server");
+
+            }
         }
     }
 
@@ -63,5 +69,10 @@ public class ServerThread extends Thread {
             name = incomeMessage.readLine();
             BuiltMessages.setUserNameMessage(clientNumber, name);
         }
+    }
+    private String getUserInput() {
+        System.out.println("\nServer type meesage: ");
+        return scanner.nextLine();
+
     }
 }
