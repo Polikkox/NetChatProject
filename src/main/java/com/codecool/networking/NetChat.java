@@ -4,12 +4,14 @@ import com.codecool.networking.modes.Client;
 import com.codecool.networking.modes.Server;
 import com.codecool.networking.view.BuiltMessages;
 
+import java.io.IOException;
+
 public class NetChat {
     final private static int MODE = 0;
     final private static int HOSTNAME = 1;
     final private static int PORTNUMBER = 2;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         if(args.length < 3){
             BuiltMessages.failedArgsMessage();
