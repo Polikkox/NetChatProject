@@ -13,9 +13,12 @@ public class ServerThread extends Thread {
     private Socket socket;
     private int clientNumber;
     private Scanner scanner = new Scanner(System.in);
+    private Server server;
+    private String name;
 
 
-    public ServerThread(Socket socket, int clientNumber) {
+    public ServerThread(Socket socket, int clientNumber, Server server) {
+        this.server = server;
         this.socket = socket;
         this.clientNumber = clientNumber;
         BuiltMessages.newUserLogMessage(socket, clientNumber);
@@ -56,17 +59,23 @@ public class ServerThread extends Thread {
             }
 //            outcomeMessage.println(getUserInput() +" by server");
             if(input != null){
-                outcomeMessage.println(input +" by server");
+                getAdrressMessage().println(input +" by server");
 
             }
         }
     }
 
     private void setUserName(BufferedReader incomeMessage, PrintWriter outcomeMessage) throws IOException {
-        String name = null;
+        this.name = null;
         while (name == null){
             outcomeMessage.println("Hello, you are client #" + clientNumber);
+
             name = incomeMessage.readLine();
+            if(name != null){
+                server.addClientToMap(this.name);
+            }
+//            outcomeMessage.println(getOnlineUsers());
+            sendOnlineUsers();
             BuiltMessages.setUserNameMessage(clientNumber, name);
         }
     }
@@ -74,5 +83,34 @@ public class ServerThread extends Thread {
         System.out.println("\nServer type meesage: ");
         return scanner.nextLine();
 
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public PrintWriter getAdrressMessage() throws IOException {
+        PrintWriter out = new PrintWriter(server.getSocket("dupa").getOutputStream(), true);
+        return out;
+    }
+    public String getOnlineUsers(){
+        return this.server.getOnlineUsers();
+    }
+    public String getClientName(){
+        return this.name;
+    }
+
+    public void sendOnlineUsers(){
+
+       this.server.getMap().entrySet()
+               .forEach(user -> {
+                   PrintWriter printWriter = null;
+                   try {
+                       printWriter = new PrintWriter(user.getValue().getSocket().getOutputStream(), true);
+                   } catch (IOException e) {
+                       e.printStackTrace();
+                   }
+                   printWriter.println(getOnlineUsers());
+               });
     }
 }
