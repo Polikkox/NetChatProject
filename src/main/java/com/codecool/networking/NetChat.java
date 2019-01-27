@@ -11,7 +11,7 @@ public class NetChat {
     final private static int HOSTNAME = 1;
     final private static int PORTNUMBER = 2;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         if(args.length < 3){
             BuiltMessages.failedArgsMessage();
