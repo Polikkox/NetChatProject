@@ -78,22 +78,32 @@ public class ServerClientHandler extends Thread {
     }
 
     public ServerClientHandler getAddressMessage(Message message) {
-
         if(server.getServerThread(message.getAddress()) == null){
-            message.setAddressCorrect(false);
-            return server.getServerThread(message.getAuthor());
+            if(!message.getAddress().equals("all")){
+                message.setAddressCorrect(false);
+                return server.getServerThread(message.getAuthor());
+            }
         }
 
         return server.getServerThread(message.getAddress());
     }
 
     public void sendMessage(ServerClientHandler address, Message message) throws IOException {
-        address.outcomeMessage.writeInt(0);
+
+
 
         if(message.isAddressCorrect()){
-            address.outcomeMessage.writeObject(new Message(message.getContent(), message.getAuthor()));
+            if(message.getAddress().equals("all")){
+                sendToAllUsers(message);
+            }
+            else{
+                address.outcomeMessage.writeInt(0);
+                address.outcomeMessage.writeObject(new Message(message.getContent(), message.getAuthor()));
+            }
+
         }
         else{
+            address.outcomeMessage.writeInt(0);
             address.outcomeMessage.writeObject(new Message(
                     "Error there is no such user online", message.getAuthor()));
         }
@@ -102,6 +112,7 @@ public class ServerClientHandler extends Thread {
     private void sendWelcomeMessage(ObjectOutputStream outcomeMessage) throws IOException {
         outcomeMessage.writeInt(0);
         outcomeMessage.writeObject(new Message("server","Hello, you are client #" + clientNumber + "\n" +
+                "To send message to all users type address [all]" +
                 "To disconnect type [exit]"));
     }
 
@@ -116,9 +127,21 @@ public class ServerClientHandler extends Thread {
                client.outcomeMessage.writeInt(0);
                client.outcomeMessage.writeObject(new Message(getOnlineUsers(), "Message from server"));
            } catch (IOException e) {
-               e.printStackTrace();
+               System.out.println(e.getMessage());
            }
        });
+    }
+
+    public void sendToAllUsers(Message message){
+        this.server.getMap().forEach((key, client) -> {
+            try {
+                client.outcomeMessage.writeInt(0);
+                client.outcomeMessage.writeObject(new Message(message.getContent(),
+                        ("Message to all:\n" + message.getAuthor())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public ObjectOutputStream getOutcomeMessage() {

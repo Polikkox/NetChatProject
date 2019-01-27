@@ -63,7 +63,7 @@ public class Client {
     }
 
     private void prepareMessage() {
-        this.message =  inputHandler.getInput();
+        this.message = inputHandler.getInput();
     }
 
     private String getName() {
