@@ -1,14 +1,16 @@
 package com.codecool.networking.modes;
 
-import com.codecool.networking.handler.InputHandler;
 import com.codecool.networking.data.Message;
+import com.codecool.networking.handler.InputHandler;
+import com.codecool.networking.view.SystemMessage;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-    private Message message;
     private InputHandler inputHandler;
     private String name;
 
@@ -31,7 +33,7 @@ public class Client {
             e.printStackTrace();
         }
 
-        sentNameOfClientToServer(outcomeMessage, name);
+        sentClientNameToServer(outcomeMessage, name);
 
         while (true) {
             if(incomeMessage.available() > 0){
@@ -42,33 +44,32 @@ public class Client {
     }
 
     private void handleOutcomeMessage(ObjectOutputStream outcomeMessage) throws IOException {
-        prepareMessage();
+        Message message = inputHandler.getInput();
 
-        if(this.message != null){
+        if(message != null){
             message.setAuthor(name);
             outcomeMessage.writeInt(0);
             outcomeMessage.writeObject(message);
-            message = null;
         }
     }
 
-    private void sentNameOfClientToServer(ObjectOutputStream outcomeMessage, String name) throws IOException {
+    private void sentClientNameToServer(ObjectOutputStream outcomeMessage, String name) throws IOException {
         outcomeMessage.writeObject(new Message("content", name));
     }
 
     private void incomeMessageHandler(ObjectInputStream incomeMessage) throws IOException, ClassNotFoundException {
         incomeMessage.readInt();
         Message inputMessage = (Message) incomeMessage.readObject();
-        System.out.println(inputMessage.getCreatedAt() + "\n" + inputMessage.getAuthor() + ": " + inputMessage.getContent());
+        SystemMessage.printMessage(inputMessage.getCreatedAt() + "\n" + inputMessage.getAuthor() + ": " + inputMessage.getContent());
+        if(!inputMessage.isAddressCorrect()){
+            System.exit(1);
+        }
     }
 
-    private void prepareMessage() {
-        this.message = inputHandler.getInput();
-    }
 
     private String getName() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Hello user enter your name: ");
+        SystemMessage.printMessage("Hello user enter your name: ");
         return scanner.nextLine();
     }
 }

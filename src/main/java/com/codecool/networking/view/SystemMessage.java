@@ -2,7 +2,7 @@ package com.codecool.networking.view;
 
 import java.net.Socket;
 
-public class BuiltMessages {
+public class SystemMessage {
 
     public static void failedArgsMessage(){
         System.out.println("Provide correct args to console\n" +
@@ -20,5 +20,9 @@ public class BuiltMessages {
     }
     public static void setUserNameMessage(int clientNumber, String name){
         System.out.println("User number: " + clientNumber + " set his nick name to: " + name);
+    }
+
+    public static void printMessage(String message){
+        System.out.println(message);
     }
 }

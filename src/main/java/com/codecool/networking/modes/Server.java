@@ -1,10 +1,10 @@
 package com.codecool.networking.modes;
 
 import com.codecool.networking.handler.ServerClientHandler;
+import com.codecool.networking.view.SystemMessage;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public class Server {
     private ServerClientHandler serverClientHandler;
 
     public void runServer(int portNumber){
-        System.out.println("The server is running.");
+        SystemMessage.printMessage("The server is running.");
         int clientNumber = 1;
 
         try (ServerSocket listener = new ServerSocket(portNumber)) {
@@ -28,9 +28,8 @@ public class Server {
         }
     }
 
-    public Socket getSocket(String clientID){
-
-        return map.get(clientID).getSocket();
+    public void removeUser(String name){
+        this.map.remove(name);
     }
 
     public ServerClientHandler getServerThread(String client){
@@ -40,10 +39,7 @@ public class Server {
     public String getOnlineUsers(){
         StringBuilder sb = new StringBuilder("Users online:\n");
 
-        this.map.entrySet().stream()
-                .forEach(key -> {
-                    sb.append(key.getKey()).append("\n");
-                });
+        this.map.forEach((key1, value) -> sb.append(key1).append("\n"));
         return sb.toString();
     }
 

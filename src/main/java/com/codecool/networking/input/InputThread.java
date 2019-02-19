@@ -1,6 +1,6 @@
 package com.codecool.networking.input;
 
-import com.codecool.networking.data.Message;
+import com.codecool.networking.view.SystemMessage;
 
 import java.util.Scanner;
 
@@ -14,8 +14,6 @@ public class InputThread implements Runnable {
     @Override
     public void run() {
 
-        System.out.println("Type name to send your message:\n");
-
         while (lock){
             try {
                 Thread.sleep(200);
@@ -23,7 +21,7 @@ public class InputThread implements Runnable {
                 e.printStackTrace();
             }
             address = scanner.nextLine();
-            System.out.println("Type message:\n");
+            SystemMessage.printMessage("Type message:\n");
             content = scanner.nextLine();
 
             if(address != null && content != null){

@@ -2,7 +2,7 @@ package com.codecool.networking;
 
 import com.codecool.networking.modes.Client;
 import com.codecool.networking.modes.Server;
-import com.codecool.networking.view.BuiltMessages;
+import com.codecool.networking.view.SystemMessage;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ public class NetChat {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         if(args.length < 3){
-            BuiltMessages.failedArgsMessage();
+            SystemMessage.failedArgsMessage();
             System.exit(1);
         }
         int port = Integer.valueOf(args[PORTNUMBER]);
@@ -26,7 +26,7 @@ public class NetChat {
             new Client().runClientSocket(args[HOSTNAME], port);
         }
         else{
-            BuiltMessages.failedModeArgsMessage();
+            SystemMessage.failedModeArgsMessage();
             System.exit(1);
         }
 
